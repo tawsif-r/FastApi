@@ -14,20 +14,23 @@ app = FastAPI()
 
 
 
-features = db.make_query_all(Feature)
+
 
 @app.get("/")
 def get_features():
+    features = db.make_query_all(Feature)
     return {"features": features}
 
 @app.post("/update_feature/")
 def update_features(feature_id: int, feature_data: FeatureUpdate):
-    feature = db.make_query(Feature, feature_id)
+    # get the feature matching the feature id
+    feature = db.make_query(Feature, feature_id) 
     if feature:
-        for key, value in feature_data.items():
-            setattr(feature, key, value)
-        db.update_query(Feature,feature)
-        return {"message": "Feature updated successfully"}
+        # Convert the Pydantic model to a dict
+        update_data = feature_data.model_dump()
+        # Call update_query with the correct parameters
+        result = db.update_query(Feature, feature_id, update_data)
+        return {"message": result}
     else:
         return {"error": "Feature not found"}
 
