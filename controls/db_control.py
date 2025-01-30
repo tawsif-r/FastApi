@@ -117,7 +117,6 @@ class DBControl:
         """
         try:
             entry = self.session.query(model).filter(getattr(model, field) == val).one_or_none()
-            # entry = self.session.query(model).filter(getattr(model, field) == val).all()
             if entry:
                 self.session.delete(entry)
                 self.session.commit()
